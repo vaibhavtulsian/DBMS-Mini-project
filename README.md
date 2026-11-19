@@ -48,17 +48,22 @@ cp .env.example .env.local
 
 ## 5. Database Setup & Execution Sequence (PRD Section 8.1)
 
-All database scripts run from an empty database in strict ordered sequence:
+All database scripts are cleanly organized into two dedicated folders:
 
 ```
 db/
- ├── 00_reset.sql              # Clean DROP ... CASCADE of tables, views, triggers, functions
- ├── 01_schema.sql             # CREATE TABLE for all 14 tables with Primary Keys
- ├── 02_alter_constraints.sql  # Adds FKs, CHECKs, UNIQUE constraints, and column migration
- ├── 03_indexes.sql            # B-Tree, partial index on low_stock_alert, GIN full-text indexes
- ├── 04_views.sql              # Creates v_monthly_financials and v_stock_summary
- ├── 05_functions_triggers.sql # Creates low-stock trigger, record_payment(), place_order_transaction()
- └── 06_vector.sql             # Enables pgvector extension, spec_embedding, review_embedding & HNSW index
+ ├── postgresql/
+ │    ├── 00_reset.sql              # Clean DROP ... CASCADE of tables, views, triggers, functions
+ │    ├── 01_schema.sql             # CREATE TABLE for relational transactional tables
+ │    ├── 02_alter_constraints.sql  # Adds FKs, CHECKs, UNIQUE constraints, and column migration
+ │    ├── 03_indexes.sql            # B-Tree, partial index on low_stock_alert, GIN full-text indexes
+ │    ├── 04_views.sql              # Creates v_monthly_financials and v_stock_summary
+ │    ├── 05_functions_triggers.sql # Creates low-stock trigger, record_payment(), place_order_transaction()
+ │    ├── 06_vector.sql             # Enables vector tables & HNSW cosine index
+ │    └── 07_seed.sql               # Comprehensive SQL seed dump (orders, inventory, ledger)
+ └── mysql/
+      ├── 01_schema.sql             # MySQL 8.0 Master Catalog schema, FULLTEXT index & audit trigger
+      └── 02_seed.sql               # Master catalog seed dump (brands, products, SKUs, audit logs)
 ```
 
 ### Option A: Automated Runner (Recommended)

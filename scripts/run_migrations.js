@@ -28,7 +28,10 @@ async function runMigrations() {
   const client = await pool.connect();
   try {
     for (const file of migrationFiles) {
-      const filePath = path.join(__dirname, '..', 'db', file);
+      let filePath = path.join(__dirname, '..', 'db', 'postgresql', file);
+      if (!fs.existsSync(filePath)) {
+        filePath = path.join(__dirname, '..', 'db', file);
+      }
       if (!fs.existsSync(filePath)) {
         console.error(`❌ Migration file not found: ${filePath}`);
         process.exit(1);
