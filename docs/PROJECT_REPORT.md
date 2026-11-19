@@ -3,7 +3,7 @@
 > **Institution**: Department of Computer Science and Engineering, PES University  
 > **Course Instructor**: Dr. Nagasundari S  
 > **Team Composition**: 2 Members (Member A: Orders, Inventory & Finance; Member B: Catalog, Search & Insights)  
-> **Technology Stack**: Next.js (App Router) + PostgreSQL 16 + pgvector  
+> **Technology Stack**: Next.js (App Router) + PostgreSQL 16 (Transactional) + MySQL 8.0 (Master Catalog & Audit)  
 
 ---
 
@@ -69,14 +69,18 @@ Traditional applications rely on basic CRUD operations that fail to prevent race
 
 ---
 
-## 6. Database Choice and Justification (Why SQL + Vector in One Instance)
-1. **Relational PostgreSQL**:
+## 6. Database Choice and Justification (Dual-Database Architecture: PostgreSQL + MySQL)
+1. **Relational PostgreSQL 16 (Port 5432 - Transactional Engine)**:
    - Structured transactional operations require strict ACID guarantees.
    - Financial ledgers, order lines, inventory deductions, and credit allocations must not suffer from eventual consistency or dirty reads.
-   - Complex relational joins, foreign keys (`RESTRICT` on financial records, `CASCADE` on order lines), and generated stored columns (`line_total = quantity * unit_price`) are native to PostgreSQL.
-2. **pgvector (Vector Database Paradigm)**:
-   - Hardware specifications and retailer reviews contain semantic nuances (e.g., *"vapor chamber heat dissipation"* vs *"stays cool during continuous gaming"*) that standard lexical matching misses.
-   - Housing vector embeddings inside the same PostgreSQL instance avoids dual-write consistency problems, eliminates separate sync pipelines, and allows single-query hybrid filtering combining vector cosine similarity with SQL `WHERE` clauses (e.g., `brand_name = 'Apple' AND wholesale_price <= 80000 AND in_stock = true`).
+   - Concurrency control is achieved using pessimistic row-level locking (`SELECT ... FOR UPDATE`) in PL/pgSQL stored procedures (`place_order_transaction`).
+   - Automated low-stock alerts are triggered natively using PostgreSQL triggers (`fn_inventory_low_stock_alert`).
+   - Financial analytics and stock summaries are generated using database views (`v_monthly_financials`, `v_stock_summary`).
+
+2. **Relational MySQL 8.0 (Port 3306 - Master Catalog & Audit Governance)**:
+   - Serves as the centralized Master Data Management (MDM) store for electronic brands, products, SKU variants, technical spec sheets, and retailer reviews.
+   - Provides MySQL Full-Text search indexes (`MATCH ... AGAINST`) across product names, descriptions, and spec sheets for fast multi-criteria discovery.
+   - Maintains an immutable operational audit log (`audit_log` table) populated via automated MySQL triggers (`trg_product_audit_update`) to track all catalog modifications and administrative activities.
 
 ---
 

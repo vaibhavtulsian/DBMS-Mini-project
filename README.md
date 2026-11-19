@@ -1,14 +1,14 @@
 # B2B Wholesale Distribution & Demand Intelligence Network
-> **DBMS Experiential Learning, Level 3 Project** | Stack: Next.js + PostgreSQL + pgvector
+> **DBMS Experiential Learning, Level 3 Project** | Stack: Next.js + Dual Databases (PostgreSQL 16 + MySQL 8.0)
 
 ---
 
 ## 1. Project Overview
-NexusMobile is an enterprise B2B web portal engineered for mobile-phone wholesale distributors and their independent retail store network. It solves high-value electronic distribution challenges through strict SQL guarantees, transactional bulk ordering with credit controls, and vector embeddings for semantic hardware and review search.
+NexusMobile is an enterprise B2B web portal engineered for mobile-phone wholesale distributors and their independent retail store network. It solves high-value electronic distribution challenges through strict SQL guarantees, transactional bulk ordering with credit controls, and a **Dual-Database Polyglot Architecture**:
 
-### Two Databases in One Instance:
-1. **Relational PostgreSQL (14 Tables)**: Enforces strict ACID guarantees, atomic transactions, row-level locks (`SELECT ... FOR UPDATE`), triggers, stored procedures, check constraints, cascading/restricting foreign keys, and analytical views.
-2. **pgvector (HNSW Cosine Distance)**: Indexes 384-dimensional dense sentence embeddings (`all-MiniLM-L6-v2`) over chunked hardware specifications and retailer field feedback for natural language demand intelligence.
+### Two Dedicated Databases:
+1. **Relational PostgreSQL 16 (Port 5432 - `wholesale_db`)**: Enforces strict ACID guarantees, atomic transactions, row-level locks (`SELECT ... FOR UPDATE`), triggers, stored procedures, check constraints, cascading/restricting foreign keys, and analytical views for orders, inventory, and ledger.
+2. **Relational MySQL 8.0 (Port 3306 - `wholesale_catalog`)**: Serves as the Master Catalog & Identity Store, managing brands, models, SKU pricing, technical spec sheets, verified reviews, and real-time operational audit logs (`audit_log`) powered by MySQL triggers and MySQL FULLTEXT indexing.
 
 ---
 
@@ -63,17 +63,17 @@ db/
 
 ### Option A: Automated Runner (Recommended)
 ```bash
-# 1. Start PostgreSQL with pgvector (via Docker Compose)
+# 1. Start both PostgreSQL 16 & MySQL 8.0 databases (via Docker Compose)
 docker compose up -d
 
-# 2. Run all DDL migration scripts in sequence (00 to 06)
+# 2. Run PostgreSQL transactional migrations (00 to 05)
 npm run db:setup
 
-# 3. Seed 6 brands, 32 products, 110+ SKUs, 5 warehouses, 22 retailers, 330+ orders, 80+ reviews
+# 3. Seed PostgreSQL orders, inventory, and retailers
 npm run db:seed
 
-# 4. Generate 384-dimensional vector embeddings for specs and reviews
-npm run db:embed
+# 4. Run MySQL 8.0 Master Catalog migrations & audit logging setup
+npm run db:setup:mysql
 ```
 
 ### Option B: Manual Execution via psql
