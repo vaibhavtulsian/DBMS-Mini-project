@@ -3,7 +3,7 @@ import mysql from 'mysql2/promise';
 // MySQL Connection Pool Configuration for Master Catalog & User Auth
 const pool = mysql.createPool({
   host: process.env.MYSQL_HOST || 'localhost',
-  port: parseInt(process.env.MYSQL_PORT || '3306', 10),
+  port: parseInt(process.env.MYSQL_PORT || '3307', 10),
   user: process.env.MYSQL_USER || 'wholesale_user',
   password: process.env.MYSQL_PASSWORD || 'wholesale_pass',
   database: process.env.MYSQL_DATABASE || 'wholesale_catalog',
