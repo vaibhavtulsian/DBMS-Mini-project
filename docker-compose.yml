@@ -1,7 +1,7 @@
 services:
   postgres:
-    image: pgvector/pgvector:pg16
-    container_name: wholesale_pgvector
+    image: postgres:16
+    container_name: wholesale_postgres
     restart: always
     environment:
       POSTGRES_USER: postgres
@@ -17,5 +17,25 @@ services:
       timeout: 5s
       retries: 5
 
+  mysql:
+    image: mysql:8.0
+    container_name: wholesale_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: wholesale_catalog
+      MYSQL_USER: wholesale_user
+      MYSQL_PASSWORD: wholesale_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysqldata:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
 volumes:
   pgdata:
+  mysqldata:

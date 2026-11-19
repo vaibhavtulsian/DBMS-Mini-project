@@ -9,8 +9,8 @@
     "start": "next start",
     "lint": "next lint",
     "db:setup": "node scripts/run_migrations.js",
+    "db:setup:mysql": "node scripts/run_mysql_migrations.js",
     "db:seed": "node scripts/seed.js",
-    "db:embed": "node scripts/generate_embeddings.js",
     "test:all": "node scripts/run_tests.js"
   },
   "dependencies": {
@@ -19,6 +19,7 @@
     "clsx": "^2.1.1",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.453.0",
+    "mysql2": "^3.24.6",
     "next": "^14.2.15",
     "pg": "^8.13.1",
     "react": "^18.3.1",

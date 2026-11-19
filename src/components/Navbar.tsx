@@ -265,6 +265,20 @@ export default function Navbar() {
                     <span>SQL Reports</span>
                   </span>
                 </Link>
+
+                <Link
+                  href="/admin/dual-db"
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    pathname === '/admin/dual-db'
+                      ? 'bg-blue-50 text-blue-700 font-semibold border border-blue-200'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  }`}
+                >
+                  <span className="flex items-center space-x-1.5">
+                    <Database className="w-4 h-4 text-blue-600" />
+                    <span>Dual DB (MySQL)</span>
+                  </span>
+                </Link>
               </>
             )}
           </nav>
