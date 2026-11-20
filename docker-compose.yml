@@ -17,25 +17,24 @@ services:
       timeout: 5s
       retries: 5
 
-  mysql:
-    image: mysql:8.0
-    container_name: wholesale_mysql
+  mongo:
+    image: mongo:7
+    container_name: wholesale_mongo
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: wholesale_catalog
-      MYSQL_USER: wholesale_user
-      MYSQL_PASSWORD: wholesale_pass
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: mongo
+      MONGO_INITDB_DATABASE: wholesale_catalog
     ports:
-      - "3307:3306"
+      - "27017:27017"
     volumes:
-      - mysqldata:/var/lib/mysql
+      - mongodata:/data/db
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 5s
       timeout: 5s
       retries: 5
 
 volumes:
   pgdata:
-  mysqldata:
+  mongodata:

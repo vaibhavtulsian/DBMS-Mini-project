@@ -1,5 +1,5 @@
 # B2B Wholesale Distribution & Demand Intelligence Network
-> **DBMS Experiential Learning, Level 3 Project** | Stack: Next.js + Dual Databases (PostgreSQL 16 + MySQL 8.0)
+> **DBMS Experiential Learning, Level 3 Project** | Stack: Next.js + Dual Databases (PostgreSQL 16 + MongoDB 7)
 
 ---
 
@@ -8,7 +8,7 @@ NexusMobile is an enterprise B2B web portal engineered for mobile-phone wholesal
 
 ### Two Dedicated Databases:
 1. **Relational PostgreSQL 16 (Port 5432 - `wholesale_db`)**: Enforces strict ACID guarantees, atomic transactions, row-level locks (`SELECT ... FOR UPDATE`), triggers, stored procedures, check constraints, cascading/restricting foreign keys, and analytical views for orders, inventory, and ledger.
-2. **Relational MySQL 8.0 (Port 3306 - `wholesale_catalog`)**: Serves as the Master Catalog & Identity Store, managing brands, models, SKU pricing, technical spec sheets, verified reviews, and real-time operational audit logs (`audit_log`) powered by MySQL triggers and MySQL FULLTEXT indexing.
+2. **NoSQL MongoDB 7 (Port 27017 - `wholesale_catalog`)**: Serves as the Master Catalog & Document Store, managing brands, models, SKU pricing, technical spec sheets, verified reviews, and real-time operational audit logs (`audit_logs`) powered by text indexing and aggregation pipelines.
 
 ---
 
@@ -61,14 +61,14 @@ db/
  │    ├── 05_functions_triggers.sql # Creates low-stock trigger, record_payment(), place_order_transaction()
  │    ├── 06_vector.sql             # Enables vector tables & HNSW cosine index
  │    └── 07_seed.sql               # Comprehensive SQL seed dump (orders, inventory, ledger)
- └── mysql/
-      ├── 01_schema.sql             # MySQL 8.0 Master Catalog schema, FULLTEXT index & audit trigger
-      └── 02_seed.sql               # Master catalog seed dump (brands, products, SKUs, audit logs)
+ └── mongodb/
+      ├── 01_schema_indexes.js      # MongoDB collection validators ($jsonSchema) & text indexes
+      └── 02_seed.js                # Master catalog seed dump (brands, products, SKUs, audit logs)
 ```
 
 ### Option A: Automated Runner (Recommended)
 ```bash
-# 1. Start both PostgreSQL 16 & MySQL 8.0 databases (via Docker Compose)
+# 1. Start both PostgreSQL 16 & MongoDB 7 databases (via Docker Compose)
 docker compose up -d
 
 # 2. Run PostgreSQL transactional migrations (00 to 05)
@@ -77,8 +77,8 @@ npm run db:setup
 # 3. Seed PostgreSQL orders, inventory, and retailers
 npm run db:seed
 
-# 4. Run MySQL 8.0 Master Catalog migrations & audit logging setup
-npm run db:setup:mysql
+# 4. Run MongoDB 7 Master Catalog seed & indexing setup
+npm run db:setup:mongo
 ```
 
 ### Option B: Manual Execution via psql
